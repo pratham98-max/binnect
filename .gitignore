@@ -1,4 +1,4 @@
 node_modules/
 .env
-*.json.serviceAccountKey
-dist/
+backend/serviceAccountKey.json
+backend/config/serviceAccountKey.json
