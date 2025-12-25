@@ -20,3 +20,4 @@ const providerRoutes = require('./routes/providerRoutes');
 
 // ... other middlewares
 app.use('/api/providers', providerRoutes);
+app.use('/api/auth', authRoutes);
