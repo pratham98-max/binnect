@@ -1,158 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Rocket, ShieldCheck, Zap, ArrowRight, MousePointer2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { loginWithGoogle, auth } from '../services/firebase';
-import api from '../services/api';
 
 const LandingPage = () => {
-  const [user, setUser] = useState(null);
-  const [trending, setTrending] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // 1. Monitor Authentication State
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // 2. Fetch Trending Businesses for the bottom section
-  useEffect(() => {
-    const fetchTrending = async () => {
-      try {
-        const { data } = await api.get('/providers/search');
-        setTrending(data.slice(0, 3)); // Show top 3 as per sketch
-      } catch (err) {
-        console.error("Error fetching trending:", err);
-      }
-    };
-    fetchTrending();
-  }, []);
-
-  // 3. Handle Login and Database Sync
-  const handleAuth = async () => {
-    try {
-      const firebaseUser = await loginWithGoogle();
-      if (firebaseUser) {
-        const token = await firebaseUser.getIdToken();
-        // Sync user with MongoDB so they exist in our database
-        await api.post('/auth/sync', {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
-    } catch (err) {
-      console.error("Auth failed:", err);
-    }
-  };
-
-  const handleLogout = () => auth.signOut();
-
-  if (loading) return <div className="h-screen flex items-center justify-center font-black italic">LOADING BINNECT...</div>;
-
   return (
-    <div className="min-h-screen bg-white font-sans text-black">
-      {/* HEADER: Matches your sketch top bar */}
-      <nav className="flex justify-between items-center p-6 border-b-4 border-black">
-        <div className="text-3xl font-black italic tracking-tighter text-blue-900">BINNECT</div>
-        <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={handleLogout}
-                className="text-xs font-black uppercase underline hover:text-red-600"
-              >
-                Logout
-              </button>
-              <Link to="/dashboard" className="flex items-center gap-2 border-4 border-black p-1 pr-4 rounded-full font-bold hover:bg-gray-50">
-                <img src={user.photoURL} className="w-8 h-8 rounded-full border-2 border-black" alt="profile" />
-                <span className="text-sm uppercase">{user.displayName.split(' ')[0]}</span>
-              </Link>
-            </div>
-          ) : (
-            <button 
-              onClick={handleAuth}
-              className="bg-blue-600 text-white border-4 border-black px-6 py-2 rounded-xl font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
-            >
-              Sign In
-            </button>
-          )}
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500 overflow-x-hidden">
+      {/* Dynamic Background Glows */}
+      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
+
+      <nav className="flex justify-between items-center p-8 max-w-7xl mx-auto relative z-10">
+        <div className="text-2xl font-bold tracking-tighter flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg rotate-12 flex items-center justify-center">B</div>
+          BINNECT
         </div>
+        <div className="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+          <a href="#" className="hover:text-white transition">Platform</a>
+          <a href="#" className="hover:text-white transition">Solutions</a>
+          <a href="#" className="hover:text-white transition">Pricing</a>
+        </div>
+        <Link to="/dashboard" className="px-6 py-2 bg-white text-black rounded-full font-bold text-sm hover:bg-blue-500 hover:text-white transition-all shadow-lg shadow-white/5">
+          Sign In
+        </Link>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-16 text-center">
-        {/* HERO SECTION */}
-        <h1 className="text-7xl font-black mb-4 uppercase tracking-tighter leading-none">
-          The B2B Connection Engine
-        </h1>
-        <p className="text-xl font-bold text-gray-500 mb-12">
-          Connect with vetted providers, cut costs, and grow faster.
-        </p>
+      <main className="max-w-7xl mx-auto px-6 pt-20 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Column: Text Content */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-6">
+              <Zap size={14} /> NEW: AI-POWERED NICHE DISCOVERY
+            </div>
+            <h1 className="text-6xl md:text-8xl font-bold leading-[0.9] tracking-tighter mb-8">
+              SCALE YOUR <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">BUSINESS</span> WITH <br />
+              PRECISION.
+            </h1>
+            <p className="text-gray-400 text-lg max-w-md mb-10 leading-relaxed">
+              Experience smarter decision-making and personalized strategies designed to scale your brand efficiently.
+            </p>
+            
+            <div className="flex gap-4">
+              <Link to="/explore" className="px-8 py-4 bg-blue-600 rounded-xl font-bold flex items-center gap-2 group hover:bg-blue-700 transition-all">
+                Get Started <ArrowRight className="group-hover:translate-x-1 transition" />
+              </Link>
+              <button className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition">
+                Learn More
+              </button>
+            </div>
+          </motion.div>
 
-        {/* AUTH BOX: Displays Sign Up option directly on landing page */}
-        {!user ? (
-          <div className="max-w-2xl mx-auto p-10 border-4 border-black rounded-[40px] bg-yellow-400 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] mb-20">
-            <h2 className="text-3xl font-black uppercase mb-2">Join the Marketplace</h2>
-            <p className="font-bold mb-8 uppercase text-sm">Sign up now to register or explore businesses</p>
-            <button 
-              onClick={handleAuth}
-              className="bg-black text-white px-12 py-5 rounded-2xl font-black text-2xl uppercase hover:bg-blue-700 transition-colors"
+          {/* Right Column: Floating 3D-Style UI Elements */}
+          <div className="relative h-[600px] hidden lg:block">
+            <motion.div 
+              animate={{ y: [0, -20, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute top-0 right-0 w-80 h-96 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-[40px] p-8 shadow-2xl overflow-hidden"
             >
-              Get Started with Google
-            </button>
-          </div>
-        ) : (
-          /* ACTION BUTTONS: Only show when logged in to prevent "not signed in" errors */
-          <div className="flex flex-wrap justify-center gap-6 mb-24">
-            <Link to="/register" className="bg-white border-4 border-black px-10 py-5 rounded-2xl font-black uppercase text-lg hover:bg-yellow-400 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all">
-              Register Business
-            </Link>
-            <Link to="/explore" className="bg-white border-4 border-black px-10 py-5 rounded-2xl font-black uppercase text-lg hover:bg-green-400 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all">
-              Explore Business
-            </Link>
-            <Link to="/dashboard" className="bg-white border-4 border-black px-10 py-5 rounded-2xl font-black uppercase text-lg hover:bg-blue-400 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all">
-              My Dashboard
-            </Link>
-          </div>
-        )}
-
-        {/* TRENDING SECTION: From the bottom of your Page 1 sketch */}
-        <section className="text-left">
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-xl font-black uppercase italic tracking-widest">Trending Businesses</h2>
-            <div className="h-1 flex-1 bg-black"></div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {trending.length > 0 ? (
-              trending.map((biz) => (
-                <div key={biz._id} className="group border-4 border-black p-8 rounded-[40px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all bg-white">
-                  <span className="text-xs font-black uppercase bg-blue-100 px-3 py-1 rounded-full border-2 border-black">
-                    {biz.category}
-                  </span>
-                  <h3 className="text-2xl font-black mt-4 mb-2 uppercase">{biz.businessName}</h3>
-                  <div className="w-full h-32 bg-gray-100 border-2 border-black rounded-2xl mb-4 flex items-center justify-center font-bold text-gray-400 uppercase text-xs">
-                    Business Preview
-                  </div>
-                  <p className="font-bold text-gray-600 text-sm line-clamp-2">{biz.description}</p>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full border-4 border-dashed border-gray-200 py-20 rounded-[40px] text-center font-bold text-gray-300">
-                No trending businesses yet. Be the first to register!
+              <div className="w-12 h-12 bg-blue-500 rounded-2xl mb-6 shadow-blue-500/50 shadow-2xl" />
+              <div className="h-4 w-32 bg-white/20 rounded-full mb-4" />
+              <div className="h-4 w-24 bg-white/10 rounded-full mb-12" />
+              <div className="space-y-4">
+                <div className="h-2 w-full bg-white/5 rounded-full" />
+                <div className="h-2 w-full bg-white/5 rounded-full" />
+                <div className="h-2 w-2/3 bg-white/5 rounded-full" />
               </div>
-            )}
-          </div>
-        </section>
-      </main>
+              <div className="absolute bottom-8 right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center text-black">
+                <ArrowRight size={20} />
+              </div>
+            </motion.div>
 
-      {/* CHATBOT: Floating circle from sketch */}
-      <div className="fixed bottom-8 left-8 w-20 h-20 bg-black text-white rounded-full border-4 border-white shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-transform z-50">
-        <div className="text-center">
-          <p className="text-[10px] font-black uppercase leading-none">Chat</p>
-          <p className="text-[10px] font-black uppercase leading-none">Bot</p>
+            {/* Float Metric Card */}
+            <motion.div 
+              animate={{ y: [0, 20, 0] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+              className="absolute bottom-20 left-0 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-3xl shadow-xl"
+            >
+              <div className="text-3xl font-bold">10K+</div>
+              <div className="text-xs text-gray-400 uppercase font-bold tracking-widest">Global Clients</div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
