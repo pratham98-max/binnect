@@ -1,22 +1,15 @@
 const mongoose = require('mongoose');
 
-const ProviderSchema = new mongoose.Schema({
-  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+const providerSchema = new mongoose.Schema({
   businessName: { type: String, required: true },
-  category: { type: String, required: true }, // e.g., "Marketing", "IT", "Logistics"
-  description: String,
-  website: String,
-  priceTier: { type: String, enum: ['$', '$$', '$$$', '$$$$'], default: '$$' },
-  isVerified: { type: Boolean, default: false },
-  location: {
-    city: String,
-    country: String
-  },
-  metrics: {
-    avgRating: { type: Number, default: 0 },
-    reviewCount: { type: Number, default: 0 }
-  },
-  tags: [String] // Keywords for AI search like "SaaS", "Remote", "Cheap"
-}, { timestamps: true });
+  category: { type: String, required: true },
+  description: { type: String }, 
+  // ADD THESE TWO FIELDS TO MATCH YOUR FORM:
+  desiredService: { type: String }, 
+  targetCustomer: { type: String }, 
+  website: { type: String },
+  ownerId: { type: String, required: true }, 
+  createdAt: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model('Provider', ProviderSchema);
+module.exports = mongoose.model('Provider', providerSchema);
