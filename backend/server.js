@@ -16,15 +16,16 @@ const app = express();
 connectDB();
 
 // 3. Middleware
-// UPDATED CORS CONFIGURATION
+// IMPROVED CORS: Added common variations of your Netlify URL
 app.use(cors({
   origin: [
-    'http://localhost:5173', // Vite default local port
-    'http://localhost:3000', // React default local port
-    'https://binnect.netlify.app' // REPLACE with your actual Netlify URL
+    'http://localhost:5173', 
+    'http://localhost:3000', 
+    'https://binnect.netlify.app',    // No trailing slash
+    'https://binnect.netlify.app/'    // With trailing slash (to be safe)
   ],
-  credentials: true, // Allows cookies/headers for authentication
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, 
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Added OPTIONS for preflight
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
@@ -40,7 +41,7 @@ app.use('/api/providers', providerRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Root / Test Route
+// Root / Test Route (Useful for checking if server is awake)
 app.get('/', (req, res) => {
     res.send('🚀 Binnect API is live on Render...');
 });
@@ -56,6 +57,6 @@ app.use((err, req, res, next) => {
 
 // 7. Start Server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => { // Adding '0.0.0.0' helps Render bind correctly
     console.log(`🚀 Server started on port ${PORT}`);
 });
