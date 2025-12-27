@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, PlusCircle, Bookmark, Search, MessageSquare, LogOut, X, User } from 'lucide-react';
+// Added 'Home' to the imports from lucide-react
+import { LayoutDashboard, PlusCircle, Bookmark, Search, MessageSquare, LogOut, X, User, Home } from 'lucide-react';
 import { auth } from '../services/firebase';
 
 const Sidebar = () => {
@@ -9,7 +10,9 @@ const Sidebar = () => {
   const location = useLocation();
   const user = auth.currentUser;
 
+  // Updated menuItems to include Home at the top
   const menuItems = [
+    { icon: <Home size={20} />, label: 'Home', path: '/home' }, // New Home Link
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <PlusCircle size={20} />, label: 'Register Niche', path: '/register' },
     { icon: <Bookmark size={20} />, label: 'Saved Niches', path: '/saved' },
@@ -46,9 +49,14 @@ const Sidebar = () => {
                 <div className="text-2xl font-black italic uppercase tracking-tighter text-white">Binnect</div>
                 <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition-colors"><X size={24} /></button>
               </div>
-              <nav className="flex-1 space-y-3">
+              <nav className="flex-1 space-y-3 overflow-y-auto"> {/* Added overflow-y-auto for longer menus */}
                 {menuItems.map((item) => (
-                  <Link key={item.path} to={item.path} onClick={() => setIsOpen(false)} className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${location.pathname === item.path ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>
+                  <Link 
+                    key={item.path} 
+                    to={item.path} 
+                    onClick={() => setIsOpen(false)} 
+                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${location.pathname === item.path ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+                  >
                     {item.icon} <span className="font-bold text-xs uppercase tracking-[0.2em]">{item.label}</span>
                   </Link>
                 ))}
